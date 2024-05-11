@@ -21,6 +21,12 @@ int main(){
 
     FILE* fp;
     fp = fopen("sj.txt","w");
+
+    if(fp==NULL){
+        printf("파일을 열 수 없습니다.\n");
+        return 1;
+    }
+
     for(int i=0; i<3; i++){
         fprintf(fp,"%s\t", std[i].name);
         fprintf(fp, "%d\t", std[i].std_id);
