@@ -1,64 +1,48 @@
-// 1. 3명의 이름 및 학번 및 2과목 성적을  sj.txt에 저장을 하는코드
-#include <stdio.h>
-#include <stdlib.h>
-typedef struct Student {
-  char name[20];  
-  int id;         
-  int score1;     
-  int score2;    
-} Student;
-int main() {
-  Student students[3] = {
-    {"김철수", 20230001, 90, 85},
-    {"이영희", 20230002, 85, 92},
-    {"박지영", 20230003, 78, 83},
-  };
-
-
-
-  FILE *fp = fopen("sj.txt", "w");
-  for (int i = 0; i < 3; i++) {
-
-    fwrite(&students[i], sizeof(Student), 1, fp);
-
-  }
-  fclose(fp);
-  printf("학생 정보 저장 완료 (sj.txt)\n");
-  return 0;
-}
-// 2. sj.txt 파일에서 값을 읽어 과목 평균 및 개인별 평균을 구해서 화면에 출력하는 코드를 작성하는코드
 #include <stdio.h>
 #include <stdlib.h>
 
 #define MAX_STUDENTS 3
 #define MAX_SUBJECTS 2
 
-
-typedef struct {
-    char name[20]; 
-    int id;        
-    int scores[MAX_SUBJECTS]; 
+typedef struct Student {
+    char name[20];
+    int id;
+    int scores[MAX_SUBJECTS];
 } Student;
-
 
 float calculateSubjectAverage(int subject_scores[], int num_students);
 float average(int student_scores[], int num_subjects);
 
 int main() {
-    
-    Student students[MAX_STUDENTS];
+    // 학생 정보 배열 초기화
+    Student students[MAX_STUDENTS] = {
+        {"김철수", 20230001, {90, 85}},
+        {"이영희", 20230002, {85, 92}},
+        {"박지영", 20230003, {78, 83}}
+    };
 
-  
+    // 학생 정보를 파일에 쓰기
+    FILE *fp = fopen("sj.txt", "w");
+    if (fp == NULL) {
+        printf("파일을 열 수 없습니다.\n");
+        return 1;
+    }
+
+    fwrite(students, sizeof(Student), MAX_STUDENTS, fp);
+    fclose(fp);
+    printf("학생 정보 저장 완료 (sj.txt)\n");
+
+    // 파일에서 학생 정보 읽기
     FILE *file = fopen("sj.txt", "rb");
-   
+    if (file == NULL) {
+        printf("파일을 열 수 없습니다.\n");
+        return 1;
+    }
 
-   
     fread(students, sizeof(Student), MAX_STUDENTS, file);
-
-   
     fclose(file);
 
-   
+    // 과목 평균 출력
     printf("과목 평균:\n");
     for (int i = 0; i < MAX_SUBJECTS; i++) {
         int subject_scores[MAX_STUDENTS];
@@ -69,7 +53,7 @@ int main() {
         printf("과목%d: %.2f\n", i + 1, subject_average);
     }
 
-   
+    // 개인별 평균 출력
     printf("\n개인별 평균:\n");
     for (int i = 0; i < MAX_STUDENTS; i++) {
         float student_average = average(students[i].scores, MAX_SUBJECTS);
@@ -79,7 +63,6 @@ int main() {
     return 0;
 }
 
-
 float calculateSubjectAverage(int subject_scores[], int num_students) {
     float total = 0;
     for (int i = 0; i < num_students; i++) {
@@ -87,7 +70,6 @@ float calculateSubjectAverage(int subject_scores[], int num_students) {
     }
     return total / num_students;
 }
-
 
 float average(int student_scores[], int num_subjects) {
     float total = 0;
